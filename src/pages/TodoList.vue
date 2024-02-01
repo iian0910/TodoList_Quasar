@@ -135,6 +135,10 @@ export default {
       date: ref('2024/02/01')
     }
   },
+  mounted () {
+    const data = localStorage.getItem('todoList')
+    this.tasks = JSON.parse(data) || []
+  },
   methods: {
     deleteIndex (todo) {
       this.$q.dialog({
@@ -207,6 +211,9 @@ export default {
           isCompleted: false
         }
       )
+
+      localStorage.setItem('todoList', JSON.stringify(this.tasks))
+
       this.newTask = ''
       this.newTaskInfo = ''
 
