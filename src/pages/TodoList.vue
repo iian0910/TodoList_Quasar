@@ -142,8 +142,8 @@ export default {
   methods: {
     deleteIndex (todo) {
       this.$q.dialog({
-        title: 'DELETE ITEM',
-        message: 'Would you want to delete item?',
+        title: '刪除確認',
+        message: '確定要刪除此項目?',
         cancel: true,
         persistent: true
       }).onOk(() => {
@@ -152,9 +152,11 @@ export default {
         })
         this.tasks.splice(newIndex, 1)
 
+        localStorage.setItem('todoList', JSON.stringify(this.tasks))
+
         this.$q.notify({
-          message: `Deleted item ${todo.title}`,
-          color: 'primary'
+          message: `已刪除項目 ${todo.title}`,
+          color: 'negative'
         })
       })
     },
