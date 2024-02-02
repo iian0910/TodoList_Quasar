@@ -45,6 +45,21 @@
           </q-item>
 
           <q-item
+            to="/star"
+            exact
+            clickable
+            v-ripple
+          >
+            <q-item-section avatar>
+              <q-icon name="star_border" />
+            </q-item-section>
+
+            <q-item-section>
+              已加星號
+            </q-item-section>
+          </q-item>
+
+          <q-item
             to="/help"
             exact
             clickable

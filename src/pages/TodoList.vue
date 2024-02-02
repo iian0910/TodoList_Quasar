@@ -97,14 +97,34 @@
           </div>
         </q-item-section>
         <q-item-section side>
-          <q-btn
-            flat
-            round
-            dense
-            color="primary"
-            icon="delete"
-            @click.stop="deleteIndex(task)"
-          />
+          <div class="flex">
+            <q-btn
+              v-if="!task.like"
+              flat
+              round
+              dense
+              color="primary"
+              icon="star_border"
+              @click.stop="likeItemSwitch(task)"
+            />
+            <q-btn
+              v-if="task.like"
+              flat
+              round
+              dense
+              color="primary"
+              icon="star"
+              @click.stop="likeItemSwitch(task)"
+            />
+            <q-btn
+              flat
+              round
+              dense
+              color="primary"
+              icon="delete"
+              @click.stop="deleteIndex(task)"
+            />
+          </div>
         </q-item-section>
       </q-item>
       <q-expansion-item
@@ -268,7 +288,8 @@ export default {
           title: txt,
           info: txtInfo,
           date: `${getMonth}月${getDate}日 星期${getDay}`,
-          isCompleted: false
+          isCompleted: false,
+          like: false
         }
       )
 
@@ -282,6 +303,10 @@ export default {
     },
     checkActive (task) {
       task.isCompleted = !task.isCompleted
+      localStorage.setItem('todoList', JSON.stringify(this.tasks))
+    },
+    likeItemSwitch (task) {
+      task.like = !task.like
       localStorage.setItem('todoList', JSON.stringify(this.tasks))
     }
   }
