@@ -67,12 +67,16 @@
       </q-item>
       <!-- show -->
       <q-item
-        v-for="task in tasks"
+        v-for="task in undoItem"
         :key="task.id"
         :class="{'isComplect bg-grey-2': task.isCompleted}"
+        @click="checkActive(task)"
+        clickable
+        v-ripple
       >
         <q-item-section avatar>
           <q-checkbox
+            class="no-pointer-events"
             v-model="task.isCompleted"
             color="primary"
           />
@@ -103,6 +107,52 @@
           />
         </q-item-section>
       </q-item>
+      <q-expansion-item
+        v-if="complectedItem.length"
+        expand-separator
+        icon="task_alt"
+        :label="`已完成(${complectedItem.length})`"
+      >
+        <q-card>
+          <q-item
+            v-for="task in complectedItem"
+            :key="task.id"
+          >
+            <q-item-section avatar>
+              <q-checkbox
+                disable
+                v-model="task.isCompleted"
+                color="primary"
+              />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label class="q-ma-none todoTitle">{{ task.title }}</q-item-label>
+              <p class="q-ma-none text-grey">{{ task.info }}</p>
+              <div class="q-mt-xs q-gutter-sm">
+                <q-btn
+                  size="sm"
+                  outline
+                  rounded
+                  class="q-mt-none"
+                  color="primary"
+                >
+                  {{ task.date }}
+                </q-btn>
+              </div>
+            </q-item-section>
+            <q-item-section side>
+              <q-btn
+                flat
+                round
+                dense
+                color="primary"
+                icon="delete"
+                @click.stop="deleteIndex(task)"
+              />
+            </q-item-section>
+          </q-item>
+        </q-card>
+      </q-expansion-item>
     </q-list>
     <div
       v-if="!tasks.length && isShowHint"
@@ -138,6 +188,14 @@ export default {
   mounted () {
     const data = localStorage.getItem('todoList')
     this.tasks = JSON.parse(data) || []
+  },
+  computed: {
+    undoItem () {
+      return this.tasks.filter(item => item.isCompleted === false)
+    },
+    complectedItem () {
+      return this.tasks.filter(item => item.isCompleted === true)
+    }
   },
   methods: {
     deleteIndex (todo) {
@@ -221,6 +279,10 @@ export default {
 
       this.isEdit = false
       this.isShowHint = true
+    },
+    checkActive (task) {
+      task.isCompleted = !task.isCompleted
+      localStorage.setItem('todoList', JSON.stringify(this.tasks))
     }
   }
 }
