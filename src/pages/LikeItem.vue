@@ -62,7 +62,7 @@
     </q-item>
     <div
       v-if="!likeItem.length"
-      class="no-tasks absolute-center column items-center"
+      class="no-like absolute-center column items-center"
     >
       <q-icon
         name="star"
@@ -125,3 +125,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.no-like {
+  opacity: 0.5;
+}
+</style>
