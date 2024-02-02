@@ -65,6 +65,77 @@
           />
         </q-item-section>
       </q-item>
+      <!-- 至頂 -->
+      <q-item
+        v-for="task in pinedItem"
+        :key="task.id"
+        :class="{'isComplect bg-grey-2': task.isCompleted}"
+        @click="checkActive(task)"
+        clickable
+        v-ripple
+      >
+        <q-item-section avatar>
+          <q-checkbox
+            class="no-pointer-events"
+            v-model="task.isCompleted"
+            color="primary"
+          />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label class="q-ma-none todoTitle">{{ task.title }} (置頂)</q-item-label>
+          <p class="q-ma-none text-grey">{{ task.info }}</p>
+          <div class="q-mt-xs q-gutter-sm">
+            <q-btn
+              size="sm"
+              outline
+              rounded
+              class="q-mt-none"
+              color="primary"
+            >
+              {{ task.date }}
+            </q-btn>
+          </div>
+        </q-item-section>
+        <q-item-section side>
+          <div class="flex">
+            <q-btn
+              v-if="task.isPushPin"
+              flat
+              round
+              dense
+              color="primary"
+              icon="restart_alt"
+              @click.stop="pinItemSwitch(task)"
+            />
+            <q-btn
+              v-if="!task.like"
+              flat
+              round
+              dense
+              color="primary"
+              icon="star_border"
+              @click.stop="likeItemSwitch(task)"
+            />
+            <q-btn
+              v-if="task.like"
+              flat
+              round
+              dense
+              color="primary"
+              icon="star"
+              @click.stop="likeItemSwitch(task)"
+            />
+            <q-btn
+              flat
+              round
+              dense
+              color="primary"
+              icon="delete"
+              @click.stop="deleteIndex(task)"
+            />
+          </div>
+        </q-item-section>
+      </q-item>
       <!-- show -->
       <q-item
         v-for="task in undoItem"
@@ -98,6 +169,15 @@
         </q-item-section>
         <q-item-section side>
           <div class="flex">
+            <q-btn
+              v-if="!task.isPushPin"
+              flat
+              round
+              dense
+              color="primary"
+              icon="push_pin"
+              @click.stop="pinItemSwitch(task)"
+            />
             <q-btn
               v-if="!task.like"
               flat
@@ -211,7 +291,10 @@ export default {
   },
   computed: {
     undoItem () {
-      return this.tasks.filter(item => item.isCompleted === false)
+      return this.tasks.filter(item => item.isCompleted === false && item.isPushPin === false)
+    },
+    pinedItem () {
+      return this.tasks.filter(item => item.isPushPin === true)
     },
     complectedItem () {
       return this.tasks.filter(item => item.isCompleted === true)
@@ -288,6 +371,7 @@ export default {
           title: txt,
           info: txtInfo,
           date: `${getMonth}月${getDate}日 星期${getDay}`,
+          isPushPin: false,
           isCompleted: false,
           like: false
         }
@@ -307,6 +391,10 @@ export default {
     },
     likeItemSwitch (task) {
       task.like = !task.like
+      localStorage.setItem('todoList', JSON.stringify(this.tasks))
+    },
+    pinItemSwitch (task) {
+      task.isPushPin = !task.isPushPin
       localStorage.setItem('todoList', JSON.stringify(this.tasks))
     }
   }
