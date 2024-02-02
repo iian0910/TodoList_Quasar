@@ -103,8 +103,8 @@
               flat
               round
               dense
-              color="primary"
-              icon="restart_alt"
+              color="positive"
+              icon="push_pin"
               @click.stop="pinItemSwitch(task)"
             />
             <q-btn
@@ -121,7 +121,7 @@
               flat
               round
               dense
-              color="primary"
+              color="warning"
               icon="star"
               @click.stop="likeItemSwitch(task)"
             />
@@ -192,7 +192,7 @@
               flat
               round
               dense
-              color="primary"
+              color="warning"
               icon="star"
               @click.stop="likeItemSwitch(task)"
             />
