@@ -2,7 +2,7 @@ const electronInstaller = require('electron-winstaller')
 const path = require('path')
 
 const resultPromise = electronInstaller.createWindowsInstaller({
-  appDirectory: path.join('./dist/electron/Packaged/Quasar_App-win32-x64'),
+  appDirectory: path.join('./dist/electron/Packaged/QuasarApp-win32-x64'),
   outputDirectory: path.join('./tmp/installer64'),
   authors: 'Ian',
   exe: 'QuasarApp.exe',
