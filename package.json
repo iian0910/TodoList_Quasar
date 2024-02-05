@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
+    "moment": "^2.30.1",
     "quasar": "^2.8.0",
     "vue": "^3.2.29",
     "vue-router": "^4.0.12"

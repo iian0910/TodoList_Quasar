@@ -92,7 +92,7 @@
               class="q-mt-none"
               color="primary"
             >
-              {{ task.date }}
+              {{ task.showDate }}
             </q-btn>
           </div>
         </q-item-section>
@@ -163,7 +163,7 @@
               class="q-mt-none"
               color="primary"
             >
-              {{ task.date }}
+              {{ task.showDate }}
             </q-btn>
           </div>
         </q-item-section>
@@ -236,7 +236,7 @@
                   class="q-mt-none"
                   color="primary"
                 >
-                  {{ task.date }}
+                  {{ task.showDate }}
                 </q-btn>
               </div>
             </q-item-section>
@@ -272,6 +272,7 @@
 
 <script>
 import { ref } from 'vue'
+import moment from 'moment'
 
 export default {
   name: 'IndexPage',
@@ -370,7 +371,8 @@ export default {
           id: timeStamp,
           title: txt,
           info: txtInfo,
-          date: `${getMonth}月${getDate}日 星期${getDay}`,
+          showDate: `${getMonth}月${getDate}日 星期${getDay}`,
+          diffDate: this.calculateTime(new Date(Date.parse(this.date))),
           isPushPin: false,
           isCompleted: false,
           like: false
@@ -396,6 +398,16 @@ export default {
     pinItemSwitch (task) {
       task.isPushPin = !task.isPushPin
       localStorage.setItem('todoList', JSON.stringify(this.tasks))
+    },
+    calculateTime (date) {
+      const databaseTime = date
+      const databaseMoment = moment(databaseTime)
+      const currentTime = moment()
+      const timeDifference = currentTime.diff(databaseMoment)
+      const durationInMilliseconds = moment.duration(timeDifference)
+      const daysDifference = Math.floor(durationInMilliseconds.asDays())
+
+      return daysDifference
     }
   }
 }

@@ -45,6 +45,21 @@
           </q-item>
 
           <q-item
+            to="/todoItems"
+            exact
+            clickable
+            v-ripple
+          >
+            <q-item-section avatar>
+              <q-icon name="summarize" />
+            </q-item-section>
+
+            <q-item-section>
+              今日事項
+            </q-item-section>
+          </q-item>
+
+          <q-item
             to="/star"
             exact
             clickable

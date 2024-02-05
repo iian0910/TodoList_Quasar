@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <q-item
-      v-for="task in likeItem"
+      v-for="task in todoItems"
       :key="task.id"
       @click="checkActive(task)"
       clickable
@@ -61,7 +61,7 @@
       </q-item-section>
     </q-item>
     <div
-      v-if="!likeItem.length"
+      v-if="!todoItems.length"
       class="no-like absolute-center column items-center"
     >
       <q-icon
@@ -78,7 +78,7 @@
 
 <script>
 export default {
-  name: 'LikeItem',
+  name: 'todoItems',
   data () {
     return {
       tasks: []
@@ -89,8 +89,8 @@ export default {
     this.tasks = JSON.parse(data) || []
   },
   computed: {
-    likeItem () {
-      return this.tasks.filter(item => item.like === true && item.isCompleted === false)
+    todoItems () {
+      return this.tasks.filter(item => item.diffDate === 0 && item.isCompleted === false)
     }
   },
   methods: {
