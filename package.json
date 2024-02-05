@@ -3,18 +3,16 @@
   "version": "0.0.1",
   "description": "A Quasar Project",
   "productName": "Quasar App",
-  "author": "EPAY-PRESCO\\ian.fan <ian.fan@presco.ws>",
+  "author": "IanFan",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
-    "build": "quasar build",
-    "deploy": "push-dir --dir=dist/spa --remote=gh-pages --branch=master"
+    "build": "quasar build"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
-    "push-dir": "^0.4.1",
     "quasar": "^2.8.0",
     "vue": "^3.2.29",
     "vue-router": "^4.0.12"
