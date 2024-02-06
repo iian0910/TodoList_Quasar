@@ -1,33 +1,19 @@
-# Quasar App (quasar-project)
+# TodoList
 
-A Quasar Project
+### 開發環境
+1.Node：v20.10.0
+2.NPM：v10.2.3
+3.Vue：v3.2.29
+4.Quasar：v2.8.0
 
-## Install the dependencies
+### 安裝流程
 ```bash
-yarn
-# or
+// 安裝 NPM
 npm install
+
+// 開發環境
+npm run dev
+
+// 打包成應用程式
+quasar build -m electron
 ```
-
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
-quasar dev
-```
-
-
-### Lint the files
-```bash
-yarn lint
-# or
-npm run lint
-```
-
-
-
-### Build the app for production
-```bash
-quasar build
-```
-
-### Customize the configuration
-See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
