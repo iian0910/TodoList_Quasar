@@ -47,7 +47,12 @@
             <template v-slot:prepend>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                  <q-date v-model="date" mask="YYYY/MM/DD">
+                  <q-date
+                    v-model="date"
+                    mask="YYYY/MM/DD"
+                    today-btn
+                    :options="date => date >= today"
+                  >
                     <div class="row items-center justify-end">
                       <q-btn v-close-popup label="Close" color="primary" flat />
                     </div>
@@ -283,7 +288,8 @@ export default {
       newTask: '',
       newTaskInfo: '',
       tasks: [],
-      date: ref('2024/02/01')
+      date: ref('2024/02/01'),
+      today: moment(new Date().toISOString().split('T')[0]).format('YYYY/MM/DD')
     }
   },
   mounted () {
