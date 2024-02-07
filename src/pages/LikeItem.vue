@@ -1,65 +1,13 @@
 <template>
   <q-page>
-    <q-item
-      v-for="task in likeItem"
-      :key="task.id"
-      @click="checkActive(task)"
-      clickable
-      v-ripple
-    >
-      <q-item-section avatar>
-        <q-checkbox
-          class="no-pointer-events"
-          v-model="task.isCompleted"
-          color="primary"
-        />
-      </q-item-section>
-      <q-item-section>
-        <q-item-label class="q-ma-none todoTitle">{{ task.title }}</q-item-label>
-        <p class="q-ma-none text-grey">{{ task.info }}</p>
-        <div class="q-mt-xs q-gutter-sm">
-          <q-btn
-            size="sm"
-            outline
-            rounded
-            class="q-mt-none"
-            color="primary"
-          >
-            {{ task.showDate }}
-          </q-btn>
-        </div>
-      </q-item-section>
-      <q-item-section side>
-        <div class="flex">
-          <q-btn
-            v-if="!task.like"
-            flat
-            round
-            dense
-            color="primary"
-            icon="star_border"
-            @click.stop="likeItemSwitch(task)"
-          />
-          <q-btn
-            v-if="task.like"
-            flat
-            round
-            dense
-            color="primary"
-            icon="star"
-            @click.stop="likeItemSwitch(task)"
-          />
-          <q-btn
-            flat
-            round
-            dense
-            color="primary"
-            icon="delete"
-            @click.stop="deleteIndex(task)"
-          />
-        </div>
-      </q-item-section>
-    </q-item>
+    <TodoComponent
+      :list="likeItem"
+      :likeIcon="true"
+      @checkActive="checkActive"
+      @openDetail="openDetail"
+      @likeItemSwitch="likeItemSwitch"
+      @deleteIndex="deleteIndex"
+    />
     <div
       v-if="!likeItem.length"
       class="no-like absolute-center column items-center"
@@ -77,8 +25,14 @@
 </template>
 
 <script>
+import CustomComponent from 'src/components/CustomComponent.vue'
+import TodoComponent from 'src/components/TodoComponent.vue'
+
 export default {
   name: 'LikeItem',
+  components: {
+    TodoComponent
+  },
   data () {
     return {
       tasks: []
@@ -117,9 +71,17 @@ export default {
         localStorage.setItem('todoList', JSON.stringify(this.tasks))
 
         this.$q.notify({
-          message: `已刪除項目 ${todo.title}`,
+          message: `項目 ${todo.title} 已刪除`,
           color: 'negative'
         })
+      })
+    },
+    openDetail (task) {
+      this.$q.dialog({
+        component: CustomComponent,
+        componentProps: {
+          data: task
+        }
       })
     }
   }

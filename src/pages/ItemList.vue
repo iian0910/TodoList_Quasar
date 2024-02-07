@@ -67,134 +67,18 @@
           />
         </q-item-section>
       </q-item>
-      <!-- 至頂 -->
-      <q-item
-        v-for="task in pinedItem"
-        :key="task.id"
-        :class="{'isComplect bg-grey-2': task.isCompleted}"
-        @click="checkActive(task)"
-        clickable
-        v-ripple
-      >
-        <q-item-section avatar>
-          <q-checkbox
-            class="no-pointer-events"
-            v-model="task.isCompleted"
-            color="primary"
-          />
-        </q-item-section>
-        <q-item-section>
-          <q-item-label class="q-ma-none todoTitle">{{ task.title }} (置頂)</q-item-label>
-        </q-item-section>
-        <q-item-section side>
-          <div class="flex">
-            <q-btn
-              v-if="task.isPushPin"
-              flat
-              round
-              dense
-              color="positive"
-              icon="push_pin"
-              @click.stop="pinItemSwitch(task)"
-            />
-            <q-btn
-              v-if="!task.like"
-              flat
-              round
-              dense
-              color="primary"
-              icon="star_border"
-              @click.stop="likeItemSwitch(task)"
-            />
-            <q-btn
-              v-if="task.like"
-              flat
-              round
-              dense
-              color="warning"
-              icon="star"
-              @click.stop="likeItemSwitch(task)"
-            />
-            <q-btn
-              flat
-              round
-              dense
-              color="primary"
-              icon="delete"
-              @click.stop="deleteIndex(task)"
-            />
-          </div>
-        </q-item-section>
-      </q-item>
       <!-- show -->
-      <q-item
-        v-for="task in undoItem"
-        :key="task.id"
-        :class="{'isComplect bg-grey-2': task.isCompleted}"
-        @click="checkActive(task)"
-        clickable
-        v-ripple
-      >
-        <q-item-section avatar>
-          <q-checkbox
-            class="no-pointer-events"
-            v-model="task.isCompleted"
-            color="primary"
-          />
-        </q-item-section>
-        <q-item-section
-          @click.stop="checkbox(task)"
-        >
-          <q-item-label
-            class="q-ma-none todoTitle row wrap items-center"
-          >
-            {{ task.title }}
-            <q-icon
-              class="q-ml-xs"
-              name="preview"
-            />
-          </q-item-label>
-        </q-item-section>
-        <q-item-section side>
-          <div class="flex">
-            <q-btn
-              v-if="!task.isPushPin"
-              flat
-              round
-              dense
-              color="primary"
-              icon="push_pin"
-              @click.stop="pinItemSwitch(task)"
-            />
-            <q-btn
-              v-if="!task.like"
-              flat
-              round
-              dense
-              color="primary"
-              icon="star_border"
-              @click.stop="likeItemSwitch(task)"
-            />
-            <q-btn
-              v-if="task.like"
-              flat
-              round
-              dense
-              color="warning"
-              icon="star"
-              @click.stop="likeItemSwitch(task)"
-            />
-            <q-btn
-              flat
-              round
-              dense
-              color="primary"
-              icon="delete"
-              @click.stop="deleteIndex(task)"
-            />
-          </div>
-        </q-item-section>
-      </q-item>
+      <TodoComponent
+        :list="undoItem"
+        :pinIcon="true"
+        :likeIcon="true"
+        @checkActive="checkActive"
+        @openDetail="openDetail"
+        @pinItemSwitch="pinItemSwitch"
+        @likeItemSwitch="likeItemSwitch"
+        @deleteIndex="deleteIndex"
+      />
+      <!-- done -->
       <q-expansion-item
         v-if="complectedItem.length"
         expand-separator
@@ -250,9 +134,13 @@
 import moment from 'moment'
 import { weekdayToString } from '../assets/js/common.js'
 import CustomComponent from 'src/components/CustomComponent.vue'
+import TodoComponent from 'src/components/TodoComponent.vue'
 
 export default {
   name: 'IndexPage',
+  components: {
+    TodoComponent
+  },
   data () {
     return {
       isShowHint: true,
@@ -269,10 +157,13 @@ export default {
   },
   computed: {
     undoItem () {
-      return this.tasks.filter(item => item.isCompleted === false && item.isPushPin === false)
-    },
-    pinedItem () {
-      return this.tasks.filter(item => item.isPushPin === true)
+      const sortData = this.tasks.filter(item => {
+        return item.isCompleted === false
+      }).sort((oldTodo, newTodo) => {
+        return newTodo.isPushPin - oldTodo.isPushPin
+      })
+
+      return sortData
     },
     complectedItem () {
       return this.tasks.filter(item => item.isCompleted === true)
@@ -363,7 +254,7 @@ export default {
 
       return daysDifference
     },
-    checkbox (task) {
+    openDetail (task) {
       this.$q.dialog({
         component: CustomComponent,
         componentProps: {

@@ -1,65 +1,11 @@
 <template>
   <q-page>
-    <q-item
-      v-for="task in todoItems"
-      :key="task.id"
-      @click="checkActive(task)"
-      clickable
-      v-ripple
-    >
-      <q-item-section avatar>
-        <q-checkbox
-          class="no-pointer-events"
-          v-model="task.isCompleted"
-          color="primary"
-        />
-      </q-item-section>
-      <q-item-section>
-        <q-item-label class="q-ma-none todoTitle">{{ task.title }}</q-item-label>
-        <p class="q-ma-none text-grey">{{ task.info }}</p>
-        <div class="q-mt-xs q-gutter-sm">
-          <q-btn
-            size="sm"
-            outline
-            rounded
-            class="q-mt-none"
-            color="primary"
-          >
-            {{ task.showDate }}
-          </q-btn>
-        </div>
-      </q-item-section>
-      <q-item-section side>
-        <div class="flex">
-          <q-btn
-            v-if="!task.like"
-            flat
-            round
-            dense
-            color="primary"
-            icon="star_border"
-            @click.stop="likeItemSwitch(task)"
-          />
-          <q-btn
-            v-if="task.like"
-            flat
-            round
-            dense
-            color="primary"
-            icon="star"
-            @click.stop="likeItemSwitch(task)"
-          />
-          <q-btn
-            flat
-            round
-            dense
-            color="primary"
-            icon="delete"
-            @click.stop="deleteIndex(task)"
-          />
-        </div>
-      </q-item-section>
-    </q-item>
+    <TodoComponent
+      :list="todoItems"
+      @checkActive="checkActive"
+      @openDetail="openDetail"
+      @deleteIndex="deleteIndex"
+    />
     <div
       v-if="!todoItems.length"
       class="no-like absolute-center column items-center"
@@ -77,8 +23,14 @@
 </template>
 
 <script>
+import CustomComponent from 'src/components/CustomComponent.vue'
+import TodoComponent from 'src/components/TodoComponent.vue'
+
 export default {
   name: 'todoItems',
+  components: {
+    TodoComponent
+  },
   data () {
     return {
       tasks: []
@@ -96,10 +48,6 @@ export default {
   methods: {
     checkActive (task) {
       task.isCompleted = !task.isCompleted
-      localStorage.setItem('todoList', JSON.stringify(this.tasks))
-    },
-    likeItemSwitch (task) {
-      task.like = !task.like
       localStorage.setItem('todoList', JSON.stringify(this.tasks))
     },
     deleteIndex (todo) {
@@ -120,6 +68,14 @@ export default {
           message: `已刪除項目 ${todo.title}`,
           color: 'negative'
         })
+      })
+    },
+    openDetail (task) {
+      this.$q.dialog({
+        component: CustomComponent,
+        componentProps: {
+          data: task
+        }
       })
     }
   }
