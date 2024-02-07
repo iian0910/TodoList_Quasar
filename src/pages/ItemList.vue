@@ -85,18 +85,6 @@
         </q-item-section>
         <q-item-section>
           <q-item-label class="q-ma-none todoTitle">{{ task.title }} (置頂)</q-item-label>
-          <p class="q-ma-none text-grey">{{ task.info }}</p>
-          <div class="q-mt-xs q-gutter-sm">
-            <q-btn
-              size="sm"
-              outline
-              rounded
-              class="q-mt-none"
-              color="primary"
-            >
-              {{ task.showDate }}
-            </q-btn>
-          </div>
         </q-item-section>
         <q-item-section side>
           <div class="flex">
@@ -154,20 +142,18 @@
             color="primary"
           />
         </q-item-section>
-        <q-item-section>
-          <q-item-label class="q-ma-none todoTitle">{{ task.title }}</q-item-label>
-          <p class="q-ma-none text-grey">{{ task.info }}</p>
-          <div class="q-mt-xs q-gutter-sm">
-            <q-btn
-              size="sm"
-              outline
-              rounded
-              class="q-mt-none"
-              color="primary"
-            >
-              {{ task.showDate }}
-            </q-btn>
-          </div>
+        <q-item-section
+          @click.stop="checkbox(task)"
+        >
+          <q-item-label
+            class="q-ma-none todoTitle row wrap items-center"
+          >
+            {{ task.title }}
+            <q-icon
+              class="q-ml-xs"
+              name="preview"
+            />
+          </q-item-label>
         </q-item-section>
         <q-item-section side>
           <div class="flex">
@@ -229,18 +215,6 @@
             </q-item-section>
             <q-item-section>
               <q-item-label class="q-ma-none todoTitle">{{ task.title }}</q-item-label>
-              <p class="q-ma-none text-grey">{{ task.info }}</p>
-              <div class="q-mt-xs q-gutter-sm">
-                <q-btn
-                  size="sm"
-                  outline
-                  rounded
-                  class="q-mt-none"
-                  color="primary"
-                >
-                  {{ task.showDate }}
-                </q-btn>
-              </div>
             </q-item-section>
             <q-item-section side>
               <q-btn
@@ -275,6 +249,7 @@
 <script>
 import moment from 'moment'
 import { weekdayToString } from '../assets/js/common.js'
+import CustomComponent from 'src/components/CustomComponent.vue'
 
 export default {
   name: 'IndexPage',
@@ -319,7 +294,7 @@ export default {
         localStorage.setItem('todoList', JSON.stringify(this.tasks))
 
         this.$q.notify({
-          message: `已刪除項目 ${todo.title}`,
+          message: `項目 ${todo.title} 已刪除`,
           color: 'negative'
         })
       })
@@ -339,7 +314,7 @@ export default {
 
         return false
       }
-      console.log('getMonth ==>', moment(this.today).month())
+
       const getMonth = moment(this.today).month() + 1
       const getDate = moment(this.today).date()
       const getDay = weekdayToString(moment(this.today).weekday())
@@ -353,7 +328,8 @@ export default {
           diffDate: this.calculateTime(moment(this.today)),
           isPushPin: false,
           isCompleted: false,
-          like: false
+          like: false,
+          subTask: []
         }
       )
 
@@ -386,6 +362,14 @@ export default {
       const daysDifference = Math.floor(durationInMilliseconds.asDays())
 
       return daysDifference
+    },
+    checkbox (task) {
+      this.$q.dialog({
+        component: CustomComponent,
+        componentProps: {
+          data: task
+        }
+      })
     }
   }
 }
