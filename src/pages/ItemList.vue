@@ -16,9 +16,6 @@
     >
       <!-- edit -->
       <q-item v-if="isEdit">
-        <q-item-section avatar>
-          <q-checkbox color="primary" />
-        </q-item-section>
         <q-item-section>
           <q-input
             square
@@ -42,13 +39,13 @@
             square
             standout
             dense
-            v-model="date"
+            v-model="today"
           >
             <template v-slot:prepend>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                   <q-date
-                    v-model="date"
+                    v-model="today"
                     mask="YYYY/MM/DD"
                     today-btn
                     :options="date => date >= today"
@@ -276,8 +273,8 @@
 </template>
 
 <script>
-import { ref } from 'vue'
 import moment from 'moment'
+import { weekdayToString } from '../assets/js/common.js'
 
 export default {
   name: 'IndexPage',
@@ -288,7 +285,6 @@ export default {
       newTask: '',
       newTaskInfo: '',
       tasks: [],
-      date: ref('2024/02/01'),
       today: moment(new Date().toISOString().split('T')[0]).format('YYYY/MM/DD')
     }
   },
@@ -343,34 +339,10 @@ export default {
 
         return false
       }
-
-      const getMonth = new Date(Date.parse(this.date)).getMonth() + 1
-      const getDate = new Date(Date.parse(this.date)).getDate()
-      let getDay = new Date(Date.parse(this.date)).getDay()
-
-      switch (getDay) {
-        case 1:
-          getDay = '一'
-          break
-        case 2:
-          getDay = '二'
-          break
-        case 3:
-          getDay = '三'
-          break
-        case 4:
-          getDay = '四'
-          break
-        case 5:
-          getDay = '五'
-          break
-        case 6:
-          getDay = '六'
-          break
-        case 0:
-          getDay = '日'
-          break
-      }
+      console.log('getMonth ==>', moment(this.today).month())
+      const getMonth = moment(this.today).month() + 1
+      const getDate = moment(this.today).date()
+      const getDay = weekdayToString(moment(this.today).weekday())
 
       this.tasks.unshift(
         {
@@ -378,7 +350,7 @@ export default {
           title: txt,
           info: txtInfo,
           showDate: `${getMonth}月${getDate}日 星期${getDay}`,
-          diffDate: this.calculateTime(new Date(Date.parse(this.date))),
+          diffDate: this.calculateTime(moment(this.today)),
           isPushPin: false,
           isCompleted: false,
           like: false
