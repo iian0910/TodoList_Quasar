@@ -130,140 +130,141 @@
   </q-page>
 </template>
 
-<script>
+<script setup>
+import { computed, onMounted, ref } from 'vue'
 import moment from 'moment'
 import { weekdayToString } from '../assets/js/common.js'
 import CustomComponent from 'src/components/CustomComponent.vue'
 import TodoComponent from 'src/components/TodoComponent.vue'
+import { useQuasar } from 'quasar'
 
-export default {
-  name: 'IndexPage',
-  components: {
-    TodoComponent
-  },
-  data () {
-    return {
-      isShowHint: true,
-      isEdit: false,
-      newTask: '',
-      newTaskInfo: '',
-      tasks: [],
-      today: moment(new Date().toISOString().split('T')[0]).format('YYYY/MM/DD'),
-      initToday: moment(new Date().toISOString().split('T')[0]).format('YYYY/MM/DD')
-    }
-  },
-  mounted () {
-    const data = localStorage.getItem('todoList')
-    this.tasks = JSON.parse(data) || []
-  },
-  computed: {
-    undoItem () {
-      const sortData = this.tasks.filter(item => {
-        return item.isCompleted === false
-      }).sort((oldTodo, newTodo) => {
-        return newTodo.isPushPin - oldTodo.isPushPin
-      })
+const $q = useQuasar()
 
-      return sortData
-    },
-    complectedItem () {
-      return this.tasks.filter(item => item.isCompleted === true)
-    }
-  },
-  methods: {
-    deleteIndex (todo) {
-      this.$q.dialog({
-        title: '刪除確認',
-        message: '確定要刪除此項目?',
-        cancel: true,
-        persistent: true
-      }).onOk(() => {
-        const newIndex = this.tasks.findIndex(item => {
-          return todo.id === item.id
-        })
-        this.tasks.splice(newIndex, 1)
+const isShowHint = ref(true)
+const isEdit = ref(false)
+const newTask = ref('')
+const newTaskInfo = ref('')
+const tasks = ref([])
+const today = ref(moment(new Date().toISOString().split('T')[0]).format('YYYY/MM/DD'))
+const initToday = ref(moment(new Date().toISOString().split('T')[0]).format('YYYY/MM/DD'))
 
-        localStorage.setItem('todoList', JSON.stringify(this.tasks))
+onMounted(() => {
+  const data = localStorage.getItem('todoList')
+  tasks.value = JSON.parse(data) || []
+})
 
-        this.$q.notify({
-          message: `項目 ${todo.title} 已刪除`,
-          color: 'negative'
-        })
-      })
-    },
-    editTask () {
-      this.isEdit = true
-      this.isShowHint = false
-    },
-    addTask () {
-      const txt = this.newTask.trim()
-      const txtInfo = this.newTaskInfo.trim()
-      const timeStamp = Math.floor(Date.now())
+const undoItem = computed(() => {
+  const sortData = tasks.value.filter(item => {
+    return item.isCompleted === false
+  }).sort((oldTodo, newTodo) => {
+    return newTodo.isPushPin - oldTodo.isPushPin
+  })
 
-      if (!txt && !txtInfo) {
-        this.isEdit = false
-        this.isShowHint = true
+  return sortData
+})
 
-        return false
-      }
+const complectedItem = computed(() => {
+  return tasks.value.filter(item => item.isCompleted === true)
+})
 
-      const getMonth = moment(this.today).month() + 1
-      const getDate = moment(this.today).date()
-      const getDay = weekdayToString(moment(this.today).weekday())
+function deleteIndex (todo) {
+  $q.dialog({
+    title: '刪除確認',
+    message: '確定要刪除此項目?',
+    cancel: true,
+    persistent: true
+  }).onOk(() => {
+    const newIndex = tasks.value.findIndex(item => {
+      return todo.id === item.id
+    })
+    tasks.value.splice(newIndex, 1)
 
-      this.tasks.unshift(
-        {
-          id: timeStamp,
-          title: txt,
-          info: txtInfo,
-          showDate: `${getMonth}月${getDate}日 星期${getDay}`,
-          diffDate: this.calculateTime(moment(this.today)),
-          isPushPin: false,
-          isCompleted: false,
-          like: false,
-          subTask: []
-        }
-      )
+    localStorage.setItem('todoList', JSON.stringify(tasks.value))
 
-      localStorage.setItem('todoList', JSON.stringify(this.tasks))
+    $q.notify({
+      message: `項目 ${todo.title} 已刪除`,
+      color: 'negative'
+    })
+  })
+}
 
-      this.newTask = ''
-      this.newTaskInfo = ''
+function editTask () {
+  isEdit.value = true
+  isShowHint.value = false
+}
 
-      this.isEdit = false
-      this.isShowHint = true
-    },
-    checkActive (task) {
-      task.isCompleted = !task.isCompleted
-      localStorage.setItem('todoList', JSON.stringify(this.tasks))
-    },
-    likeItemSwitch (task) {
-      task.like = !task.like
-      localStorage.setItem('todoList', JSON.stringify(this.tasks))
-    },
-    pinItemSwitch (task) {
-      task.isPushPin = !task.isPushPin
-      localStorage.setItem('todoList', JSON.stringify(this.tasks))
-    },
-    calculateTime (date) {
-      const databaseTime = date
-      const databaseMoment = moment(databaseTime)
-      const currentTime = moment()
-      const timeDifference = currentTime.diff(databaseMoment)
-      const durationInMilliseconds = moment.duration(timeDifference)
-      const daysDifference = Math.floor(durationInMilliseconds.asDays())
+function addTask () {
+  const txt = newTask.value.trim()
+  const txtInfo = newTaskInfo.value.trim()
+  const timeStamp = Math.floor(Date.now())
 
-      return daysDifference
-    },
-    openDetail (task) {
-      this.$q.dialog({
-        component: CustomComponent,
-        componentProps: {
-          data: task
-        }
-      })
-    }
+  if (!txt && !txtInfo) {
+    isEdit.value = false
+    isShowHint.value = true
+
+    return false
   }
+
+  const getMonth = moment(today.value).month() + 1
+  const getDate = moment(today.value).date()
+  const getDay = weekdayToString(moment(today.value).weekday())
+
+  tasks.value.unshift(
+    {
+      id: timeStamp,
+      title: txt,
+      info: txtInfo,
+      showDate: `${getMonth}月${getDate}日 星期${getDay}`,
+      diffDate: calculateTime(moment(today.value)),
+      isPushPin: false,
+      isCompleted: false,
+      like: false,
+      subTask: []
+    }
+  )
+
+  localStorage.setItem('todoList', JSON.stringify(tasks.value))
+
+  newTask.value = ''
+  newTaskInfo.value = ''
+
+  isEdit.value = false
+  isShowHint.value = true
+}
+
+function checkActive (task) {
+  task.isCompleted = !task.isCompleted
+  localStorage.setItem('todoList', JSON.stringify(tasks.value))
+}
+
+function likeItemSwitch (task) {
+  task.like = !task.like
+  localStorage.setItem('todoList', JSON.stringify(tasks.value))
+}
+
+function pinItemSwitch (task) {
+  task.isPushPin = !task.isPushPin
+  localStorage.setItem('todoList', JSON.stringify(tasks.value))
+}
+
+function calculateTime (date) {
+  const databaseTime = date
+  const databaseMoment = moment(databaseTime)
+  const currentTime = moment()
+  const timeDifference = currentTime.diff(databaseMoment)
+  const durationInMilliseconds = moment.duration(timeDifference)
+  const daysDifference = Math.floor(durationInMilliseconds.asDays())
+
+  return daysDifference
+}
+
+function openDetail (task) {
+  $q.dialog({
+    component: CustomComponent,
+    componentProps: {
+      data: task
+    }
+  })
 }
 </script>
 

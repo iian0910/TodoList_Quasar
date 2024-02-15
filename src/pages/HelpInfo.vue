@@ -4,9 +4,3 @@
     <p>就是打字按一按而已 不可能不會吧!!</p>
   </q-page>
 </template>
-
-<script>
-export default {
-  name: 'HelpInfo'
-}
-</script>

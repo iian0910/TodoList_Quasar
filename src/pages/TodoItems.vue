@@ -22,63 +22,58 @@
   </q-page>
 </template>
 
-<script>
+<script setup>
+import { computed, onMounted, ref } from 'vue'
 import CustomComponent from 'src/components/CustomComponent.vue'
 import TodoComponent from 'src/components/TodoComponent.vue'
+import { useQuasar } from 'quasar'
 
-export default {
-  name: 'todoItems',
-  components: {
-    TodoComponent
-  },
-  data () {
-    return {
-      tasks: []
-    }
-  },
-  mounted () {
-    const data = localStorage.getItem('todoList')
-    this.tasks = JSON.parse(data) || []
-  },
-  computed: {
-    todoItems () {
-      return this.tasks.filter(item => item.diffDate === 0 && item.isCompleted === false)
-    }
-  },
-  methods: {
-    checkActive (task) {
-      task.isCompleted = !task.isCompleted
-      localStorage.setItem('todoList', JSON.stringify(this.tasks))
-    },
-    deleteIndex (todo) {
-      this.$q.dialog({
-        title: '刪除確認',
-        message: '確定要刪除此項目?',
-        cancel: true,
-        persistent: true
-      }).onOk(() => {
-        const newIndex = this.tasks.findIndex(item => {
-          return todo.id === item.id
-        })
-        this.tasks.splice(newIndex, 1)
+const $q = useQuasar()
 
-        localStorage.setItem('todoList', JSON.stringify(this.tasks))
+const tasks = ref([])
 
-        this.$q.notify({
-          message: `已刪除項目 ${todo.title}`,
-          color: 'negative'
-        })
-      })
-    },
-    openDetail (task) {
-      this.$q.dialog({
-        component: CustomComponent,
-        componentProps: {
-          data: task
-        }
-      })
+onMounted(() => {
+  const data = localStorage.getItem('todoList')
+  tasks.value = JSON.parse(data) || []
+})
+
+const todoItems = computed(() => {
+  return tasks.value.filter(item => item.diffDate === 0 && item.isCompleted === false)
+})
+
+function checkActive (task) {
+  task.isCompleted = !task.isCompleted
+  localStorage.setItem('todoList', JSON.stringify(tasks.value))
+}
+
+function deleteIndex (todo) {
+  $q.dialog({
+    title: '刪除確認',
+    message: '確定要刪除此項目?',
+    cancel: true,
+    persistent: true
+  }).onOk(() => {
+    const newIndex = tasks.value.findIndex(item => {
+      return todo.id === item.id
+    })
+    tasks.value.splice(newIndex, 1)
+
+    localStorage.setItem('todoList', JSON.stringify(tasks.value))
+
+    $q.notify({
+      message: `已刪除項目 ${todo.title}`,
+      color: 'negative'
+    })
+  })
+}
+
+function openDetail (task) {
+  $q.dialog({
+    component: CustomComponent,
+    componentProps: {
+      data: task
     }
-  }
+  })
 }
 </script>
 
