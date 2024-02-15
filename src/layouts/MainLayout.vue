@@ -108,32 +108,23 @@
   </q-layout>
 </template>
 
-<script>
-import { date } from 'quasar'
+<script setup>
+import { computed, onMounted, ref } from 'vue'
+import moment from 'moment'
 
-export default {
-  name: 'MyLayout',
-  data () {
-    return {
-      leftDrawerOpen: false,
-      env: ''
-    }
-  },
-  mounted () {
-    this.env = process.env.MODE
-  },
-  computed: {
-    todayDate () {
-      const timeStamp = Date.now()
-      return date.formatDate(timeStamp, 'dddd D MMMM')
-    }
-  },
-  methods: {
-    toggleLeftDrawer () {
-      console.log('HI!')
-      this.leftDrawerOpen = !this.leftDrawerOpen
-    }
-  }
+const leftDrawerOpen = ref(false)
+const env = ref('')
+
+onMounted(() => {
+  env.value = process.env.MODE
+})
+
+const todayDate = computed(() => {
+  return moment().format('LL')
+})
+
+function toggleLeftDrawer () {
+  leftDrawerOpen.value = !leftDrawerOpen.value
 }
 </script>
 
